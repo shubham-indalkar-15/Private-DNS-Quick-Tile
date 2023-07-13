@@ -44,6 +44,16 @@
             android:text="@string/dns_on" />
     </RadioGroup>
 
+    <CheckBox
+        android:id="@+id/check_hide_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/check_hide_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+
     <EditText
         android:id="@+id/text_hostname"
         android:layout_width="wrap_content"
@@ -57,7 +67,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+        app:layout_constraintTop_toBottomOf="@+id/check_hide_icon" />
 
     <Button
         android:id="@+id/button_ok"
