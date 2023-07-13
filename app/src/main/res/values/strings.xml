@@ -14,4 +14,5 @@
     <string name="app_info">App info</string>
     <string name="view_fdroid">View on F-Droid</string>
     <string name="help">Help</string>
+    <string name="check_hide_icon">Hide App Icon</string>
 </resources>
