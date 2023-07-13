@@ -20,16 +20,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
-import android.widget.VideoView;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.Toast;
+
 
 public class PrivateDnsConfigActivity extends Activity {
 
     private SharedPreferences toggleStates;
+    private CheckBox checkHideIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +43,8 @@ public class PrivateDnsConfigActivity extends Activity {
         final EditText textHostname = findViewById(R.id.text_hostname);
 
         final Button okButton = findViewById(R.id.button_ok);
+
+        checkHideIcon = findViewById(R.id.checkbox_hide_app_icon);
 
         if ((!hasPermission()) || toggleStates.getBoolean("first_run", true)) {
             HelpMenu();
