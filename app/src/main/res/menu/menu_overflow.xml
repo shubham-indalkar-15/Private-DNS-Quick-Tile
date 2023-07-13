@@ -1,5 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:title="Hide App Icon"
+        android:id="@+id/menu_hide_app_icon">
+    </item>
+    <item
         android:title="App info"
         android:id="@+id/action_appinfo">
     </item>

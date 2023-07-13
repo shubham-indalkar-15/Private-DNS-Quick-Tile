@@ -22,6 +22,10 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 
 public class PrivateDnsConfigActivity extends Activity {
 
@@ -37,7 +41,6 @@ public class PrivateDnsConfigActivity extends Activity {
         final CheckBox checkOff = findViewById(R.id.check_off);
         final CheckBox checkAuto = findViewById(R.id.check_auto);
         final CheckBox checkOn = findViewById(R.id.check_on);
-        final CheckBox checkHideIcon = findViewById(R.id.check_hide_icon);
 
         final EditText textHostname = findViewById(R.id.text_hostname);
 
@@ -94,13 +97,6 @@ public class PrivateDnsConfigActivity extends Activity {
             }
         });
 
-        checkHideIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                toggleStates.edit().putBoolean("hide_icon", isChecked).apply();
-            }
-        });
-
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +119,28 @@ public class PrivateDnsConfigActivity extends Activity {
                     Toast.makeText(PrivateDnsConfigActivity.this, getString(R.string.toast_no_permission), Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+        
+        ImageButton kebabMenuButton = findViewById(R.id.button_kebab_menu);
+        kebabMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(PrivateDnsConfigActivity.this, v);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_kebab, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.menu_hide_app_icon) {
+                            // Handle hide app icon option here
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }   
         });
+        );
     }
 
     public boolean hasPermission() {
