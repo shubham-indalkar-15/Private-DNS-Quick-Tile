@@ -2,7 +2,9 @@ package com.jpwolfso.privdnsqt;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,109 +25,116 @@ import android.widget.VideoView;
 
 public class PrivateDnsConfigActivity extends Activity {
 
+    private SharedPreferences toggleStates;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_private_dns_config);
 
-        final SharedPreferences togglestates = getSharedPreferences("togglestates", Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = togglestates.edit();
+        toggleStates = getSharedPreferences("togglestates", Context.MODE_PRIVATE);
 
-        final CheckBox checkoff = findViewById(R.id.check_off);
-        final CheckBox checkauto = findViewById(R.id.check_auto);
-        final CheckBox checkon = findViewById(R.id.check_on);
+        final CheckBox checkOff = findViewById(R.id.check_off);
+        final CheckBox checkAuto = findViewById(R.id.check_auto);
+        final CheckBox checkOn = findViewById(R.id.check_on);
+        final CheckBox checkHideIcon = findViewById(R.id.check_hide_icon);
 
-        final EditText texthostname = findViewById(R.id.text_hostname);
+        final EditText textHostname = findViewById(R.id.text_hostname);
 
-        final Button okbutton = findViewById(R.id.button_ok);
+        final Button okButton = findViewById(R.id.button_ok);
 
-        if ((!hasPermission()) || togglestates.getBoolean("first_run", true) ){
+        if ((!hasPermission()) || toggleStates.getBoolean("first_run", true)) {
             HelpMenu();
-            editor.putBoolean("first_run", false).commit();
+            toggleStates.edit().putBoolean("first_run", false).apply();
         }
 
-        if (togglestates.getBoolean("toggle_off", true)) {
-            checkoff.setChecked(true);
+        if (toggleStates.getBoolean("toggle_off", true)) {
+            checkOff.setChecked(true);
         }
 
-        if (togglestates.getBoolean("toggle_auto", true)) {
-            checkauto.setChecked(true);
+        if (toggleStates.getBoolean("toggle_auto", true)) {
+            checkAuto.setChecked(true);
         }
 
-        if (togglestates.getBoolean("toggle_on", true)) {
-            checkon.setChecked(true);
-            texthostname.setEnabled(true);
+        if (toggleStates.getBoolean("toggle_on", true)) {
+            checkOn.setChecked(true);
+            textHostname.setEnabled(true);
         } else {
-            texthostname.setEnabled(false);
-
+            textHostname.setEnabled(false);
         }
 
-        String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
-        if (dnsprovider != null) {
-            texthostname.setText(dnsprovider);
+        if (toggleStates.getBoolean("hide_icon", false)) {
+            checkHideIcon.setChecked(true);
         }
 
-        checkoff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        String dnsProvider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
+        if (dnsProvider != null) {
+            textHostname.setText(dnsProvider);
+        }
+
+        checkOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkoff.isChecked()) {
-                    editor.putBoolean("toggle_off", true);
-                } else {
-                    editor.putBoolean("toggle_off", false);
-                }
+                toggleStates.edit().putBoolean("toggle_off", isChecked).apply();
             }
         });
 
-        checkauto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        checkAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkauto.isChecked()) {
-                    editor.putBoolean("toggle_auto", true);
-                } else {
-                    editor.putBoolean("toggle_auto", false);
-                }
+                toggleStates.edit().putBoolean("toggle_auto", isChecked).apply();
             }
         });
 
-        checkon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        checkOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkon.isChecked()) {
-                    editor.putBoolean("toggle_on", true);
-                    texthostname.setEnabled(true);
-                } else {
-                    editor.putBoolean("toggle_on", false);
-                    texthostname.setEnabled(false);
-                }
+                toggleStates.edit().putBoolean("toggle_on", isChecked).apply();
+                textHostname.setEnabled(isChecked);
             }
         });
 
-        okbutton.setOnClickListener(new View.OnClickListener() {
+        checkHideIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                toggleStates.edit().putBoolean("hide_icon", isChecked).apply();
+            }
+        });
+
+        okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (hasPermission()) {
-                    if (checkon.isChecked()) {
-                        if (texthostname.getText().toString().isEmpty()) {
+                    if (checkOn.isChecked()) {
+                        if (textHostname.getText().toString().isEmpty()) {
                             Toast.makeText(PrivateDnsConfigActivity.this, R.string.toast_no_dns, Toast.LENGTH_SHORT).show();
                             return;
                         } else {
-                            Settings.Global.putString(getContentResolver(), "private_dns_specifier", texthostname.getText().toString());
+                            Settings.Global.putString(getContentResolver(), "private_dns_specifier", textHostname.getText().toString());
                         }
                     }
-                    editor.commit();
+
+                    toggleAppIcon(checkHideIcon.isChecked());
+
+                    toggleStates.edit().apply();
                     Toast.makeText(PrivateDnsConfigActivity.this, R.string.toast_changes_saved, Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     Toast.makeText(PrivateDnsConfigActivity.this, getString(R.string.toast_no_permission), Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }
         });
-
     }
 
     public boolean hasPermission() {
         return checkCallingOrSelfPermission("android.permission.WRITE_SECURE_SETTINGS") != PackageManager.PERMISSION_DENIED;
+    }
+
+    public void toggleAppIcon(boolean hideIcon) {
+        PackageManager packageManager = getPackageManager();
+        ComponentName componentName = new ComponentName(this, PrivateDnsConfigActivity.class);
+        int newState = hideIcon ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+        packageManager.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,7 +145,6 @@ public class PrivateDnsConfigActivity extends Activity {
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-
         int id = item.getItemId();
         if (id == R.id.action_appinfo) {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -167,6 +175,5 @@ public class PrivateDnsConfigActivity extends Activity {
                 .setView(helpView)
                 .create();
         helpDialog.show();
-
     }
 }
