@@ -2,17 +2,15 @@ package com.jpwolfso.privdnsqt;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Icon;
 import android.provider.Settings;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.widget.Toast;
-import android.content.pm.LauncherApps;
-
 
 public class PrivateDnsTileService extends TileService {
-
 
     public static String DNS_MODE_OFF = "off";
     public static String DNS_MODE_AUTO = "opportunistic";
@@ -20,7 +18,6 @@ public class PrivateDnsTileService extends TileService {
 
     public void onTileAdded() {
         super.onTileAdded();
-
     }
 
     public void onTileRemoved() {
@@ -31,7 +28,7 @@ public class PrivateDnsTileService extends TileService {
         super.onStartListening();
 
         String dnsmode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
-        Tile tile = this.getQsTile();
+        Tile tile = getQsTile();
 
         if (dnsmode.equalsIgnoreCase(DNS_MODE_OFF)) {
             refreshTile(tile, Tile.STATE_INACTIVE, getString(R.string.qt_off), R.drawable.ic_dnsoff);
@@ -39,7 +36,7 @@ public class PrivateDnsTileService extends TileService {
             refreshTile(tile, Tile.STATE_ACTIVE, getString(R.string.qt_auto), R.drawable.ic_dnsauto);
         } else if (dnsmode.equalsIgnoreCase(DNS_MODE_ON)) {
             String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
-            if ((dnsprovider != null)) {
+            if (dnsprovider != null) {
                 refreshTile(tile, Tile.STATE_ACTIVE, dnsprovider, R.drawable.ic_dnson);
             } else {
                 Toast.makeText(this, R.string.toast_no_permission, Toast.LENGTH_SHORT).show();
@@ -56,15 +53,15 @@ public class PrivateDnsTileService extends TileService {
 
         final SharedPreferences togglestates = getSharedPreferences("togglestates", Context.MODE_PRIVATE);
 
-        final Boolean toggleoff = togglestates.getBoolean("toggle_off", true);
-        final Boolean toggleauto = togglestates.getBoolean("toggle_auto", true);
-        final Boolean toggleon = togglestates.getBoolean("toggle_on", true);
+        final boolean toggleoff = togglestates.getBoolean("toggle_off", true);
+        final boolean toggleauto = togglestates.getBoolean("toggle_auto", true);
+        final boolean toggleon = togglestates.getBoolean("toggle_on", true);
 
         String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
 
         if (hasPermission()) {
-            String dnsmode = Settings.Global.putString(getContentResolver(), "private_dns_mode", dnsmode);
-            Tile tile = this.getQsTile();
+            String dnsmode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
+            Tile tile = getQsTile();
             if (dnsmode.equalsIgnoreCase(DNS_MODE_OFF)) {
                 if (toggleauto) {
                     changeTileState(tile, Tile.STATE_ACTIVE, getString(R.string.qt_auto), R.drawable.ic_dnsauto, DNS_MODE_AUTO);
@@ -90,8 +87,7 @@ public class PrivateDnsTileService extends TileService {
                     changeTileState(tile, Tile.STATE_ACTIVE, getString(R.string.qt_auto), R.drawable.ic_dnsauto, DNS_MODE_AUTO);
                 }
             }
-
-        } else if (!(hasPermission())) {
+        } else if (!hasPermission()) {
             Toast.makeText(this, getString(R.string.toast_no_permission), Toast.LENGTH_SHORT).show();
         }
     }
@@ -114,6 +110,4 @@ public class PrivateDnsTileService extends TileService {
         tile.setIcon(Icon.createWithResource(this, icon));
         tile.updateTile();
     }
-
-
 }
