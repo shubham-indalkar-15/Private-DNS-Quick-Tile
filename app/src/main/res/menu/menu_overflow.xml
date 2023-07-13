@@ -1,18 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_hide_app_icon"
         android:title="Hide App Icon"
-        android:id="@+id/menu_hide_app_icon">
-    </item>
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="never" />
     <item
-        android:title="App info"
-        android:id="@+id/action_appinfo">
-    </item>
+        android:id="@+id/action_appinfo"
+        android:title="App info" />
     <item
-        android:title="View on F-Droid"
-        android:id="@+id/action_fdroid">
-    </item>
+        android:id="@+id/action_fdroid"
+        android:title="View on F-Droid" />
     <item
-        android:title="@string/help"
-        android:id="@+id/action_help">
-    </item>
+        android:id="@+id/action_help"
+        android:title="@string/help" />
 </menu>

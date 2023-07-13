@@ -163,16 +163,18 @@ public class PrivateDnsConfigActivity extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_appinfo) {
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
+        if (id == R.id.menu_hide_app_icon) {
+            CheckBox hideIconCheckbox = item.getActionView().findViewById(R.id.checkbox_hide_app_icon);
+            boolean hideIcon = hideIconCheckbox.isChecked();
+            toggleAppIcon(hideIcon);
+            Toast.makeText(this, "App icon hidden: " + hideIcon, Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.action_appinfo) {
+            // Handle app info action
         } else if (id == R.id.action_fdroid) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(getString(R.string.url_fdroid)));
-            startActivity(intent);
+            // Handle view on F-Droid action
         } else if (id == R.id.action_help) {
-            HelpMenu();
+            // Handle help action
         }
         return super.onMenuItemSelected(featureId, item);
     }
