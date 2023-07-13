@@ -8,6 +8,8 @@ import android.provider.Settings;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.widget.Toast;
+import android.content.pm.LauncherApps;
+
 
 public class PrivateDnsTileService extends TileService {
 
@@ -61,7 +63,7 @@ public class PrivateDnsTileService extends TileService {
         String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
 
         if (hasPermission()) {
-            String dnsmode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
+            String dnsmode = Settings.Global.putString(getContentResolver(), "private_dns_mode", dnsmode);
             Tile tile = this.getQsTile();
             if (dnsmode.equalsIgnoreCase(DNS_MODE_OFF)) {
                 if (toggleauto) {
